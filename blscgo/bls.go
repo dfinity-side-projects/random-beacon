@@ -1,5 +1,7 @@
 package blscgo
 
+/* Original from Shigeo Mitsunari, https://github.com/herumi/bls/blob/master/go/bls/bls.go */
+
 /*
 #cgo CFLAGS:
 #cgo LDFLAGS:-lbls -lbls_if -lmcl -lgmp -lgmpxx -lstdc++ -lcrypto
