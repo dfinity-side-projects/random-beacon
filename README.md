@@ -15,8 +15,8 @@ docker run \
 	--interactive \
 	--rm \
 	--tty \
-	--volume $(pwd):/go/src/dfinity/$REPO \
-	--workdir /go/src/dfinity/$REPO \
+	--volume $(pwd):/go/src/dfinity/beacon \
+	--workdir /go/src/dfinity/beacon \
 	dfinity/build-env
 ```
 
