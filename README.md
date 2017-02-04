@@ -7,8 +7,8 @@ Some more background can be found in the "Technical" tab of this FAQ: http://dfi
 ## Simulation Environment
 You should first clone the `beacon` repository, and then run the `dfinity/build-env` docker container from inside the repository.
 ```
-git clone git@github.com:dfinity/beacon.git
-cd beacon
+git clone git@github.com:dfinity/random-beacon.git
+cd random-beacon
 docker pull dfinity/build-env
 docker run \
 	--interactive \
