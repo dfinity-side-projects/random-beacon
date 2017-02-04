@@ -114,12 +114,12 @@ func TestSign(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		t.Log("idVec[%d]=%s\n", i, idVec[i].String())
+		t.Logf("idVec[%d]=%s\n", i, idVec[i].String())
 
 		secVec[i].Set(msk, &idVec[i])
 
 		pubVec[i].Set(mpk, &idVec[i])
-		t.Log("pubVec[%d]=%s\n", i, pubVec[i].String())
+		t.Logf("pubVec[%d]=%s\n", i, pubVec[i].String())
 
 		if pubVec[i].String() != secVec[i].GetPublicKey().String() {
 			t.Error("Pubkey derivation does not match")
