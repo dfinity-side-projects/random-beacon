@@ -1,6 +1,7 @@
 package blscgo
 
 import "testing"
+import "strconv"
 
 func TestPre(t *testing.T) {
 	t.Log("init")
@@ -185,3 +186,132 @@ func TestPop(t *testing.T) {
 		t.Errorf("Invalid Pop verifies")
 	}
 }
+
+func BenchmarkPubkeyFromSeckey(b *testing.B) {
+	b.StopTimer()
+	Init()
+	var sec SecretKey
+	for n := 0; n < b.N; n++ {
+		sec.Init()
+		b.StartTimer()
+		sec.GetPublicKey()
+		b.StopTimer()
+	}
+}
+
+func BenchmarkSigning(b *testing.B) {
+	b.StopTimer()
+	Init()
+	var sec SecretKey
+	for n := 0; n < b.N; n++ {
+		sec.Init()
+		b.StartTimer()
+		sec.Sign(strconv.Itoa(n))
+		b.StopTimer()
+	}
+}
+
+func BenchmarkValidation(b *testing.B) {
+	b.StopTimer()
+	Init()
+	var sec SecretKey
+	for n := 0; n < b.N; n++ {
+		sec.Init()
+		pub := sec.GetPublicKey()
+		m := strconv.Itoa(n)
+		sig := sec.Sign(m)
+		b.StartTimer()
+		sig.Verify(pub, m)
+		b.StopTimer()
+	}
+}
+
+func benchmarkDeriveSeckeyShare(k int, b *testing.B) {
+	b.StopTimer()
+	Init()
+	var sec SecretKey
+	sec.Init()
+	msk := sec.GetMasterSecretKey(k)
+	var id ID
+	for n := 0; n < b.N; n++ {
+		err := id.Set([]uint64{1, 2, 3, uint64(n)})
+		if err != nil {
+			b.Fatal(err)
+		}
+		b.StartTimer()
+		sec.Set(msk, &id)
+		b.StopTimer()
+	}
+}
+
+//func BenchmarkDeriveSeckeyShare100(b *testing.B)  { benchmarkDeriveSeckeyShare(100, b) }
+//func BenchmarkDeriveSeckeyShare200(b *testing.B)  { benchmarkDeriveSeckeyShare(200, b) }
+func BenchmarkDeriveSeckeyShare500(b *testing.B) { benchmarkDeriveSeckeyShare(500, b) }
+
+//func BenchmarkDeriveSeckeyShare1000(b *testing.B) { benchmarkDeriveSeckeyShare(1000, b) }
+
+func benchmarkRecoverSeckey(k int, b *testing.B) {
+	b.StopTimer()
+	Init()
+	var sec SecretKey
+	sec.Init()
+	msk := sec.GetMasterSecretKey(k)
+
+	// derive n shares
+	n := k
+	secVec := make([]SecretKey, n)
+	idVec := make([]ID, n)
+	for i := 0; i < n; i++ {
+		err := idVec[i].Set([]uint64{1, 2, 3, uint64(i)})
+		if err != nil {
+			b.Fatal(err)
+		}
+		secVec[i].Set(msk, &idVec[i])
+	}
+
+	// recover from secVec and idVec
+	var sec2 SecretKey
+	b.StartTimer()
+	for n := 0; n < b.N; n++ {
+		sec2.Recover(secVec, idVec)
+	}
+}
+
+func BenchmarkRecoverSeckey100(b *testing.B)  { benchmarkRecoverSeckey(100, b) }
+func BenchmarkRecoverSeckey200(b *testing.B)  { benchmarkRecoverSeckey(200, b) }
+func BenchmarkRecoverSeckey500(b *testing.B)  { benchmarkRecoverSeckey(500, b) }
+func BenchmarkRecoverSeckey1000(b *testing.B) { benchmarkRecoverSeckey(1000, b) }
+
+func benchmarkRecoverSignature(k int, b *testing.B) {
+	b.StopTimer()
+	Init()
+	var sec SecretKey
+	sec.Init()
+	msk := sec.GetMasterSecretKey(k)
+
+	// derive n shares
+	n := k
+	idVec := make([]ID, n)
+	secVec := make([]SecretKey, n)
+	signVec := make([]Sign, n)
+	for i := 0; i < n; i++ {
+		err := idVec[i].Set([]uint64{1, 2, 3, uint64(i)})
+		if err != nil {
+			b.Fatal(err)
+		}
+		secVec[i].Set(msk, &idVec[i])
+		signVec[i] = *secVec[i].Sign("test message")
+	}
+
+	// recover signature
+	var sig Sign
+	b.StartTimer()
+	for n := 0; n < b.N; n++ {
+		sig.Recover(signVec, idVec)
+	}
+}
+
+func BenchmarkRecoverSignature100(b *testing.B)  { benchmarkRecoverSignature(100, b) }
+func BenchmarkRecoverSignature200(b *testing.B)  { benchmarkRecoverSignature(200, b) }
+func BenchmarkRecoverSignature500(b *testing.B)  { benchmarkRecoverSignature(500, b) }
+func BenchmarkRecoverSignature1000(b *testing.B) { benchmarkRecoverSignature(1000, b) }
