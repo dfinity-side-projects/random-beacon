@@ -113,10 +113,36 @@ List of parameters:
 * `-vvec` flag to run validation of verification vectors (default false)
 * `-bist` flag to run built-in self tests (default false)
 
-## Cgo test
+## Run test
 
 `go run test/test.go`
  
+## Run Benchmark
+
+`go test --bench=. ./...`
+
+Sample output:
+```
+BenchmarkPubkeyFromSeckey-4       	    5000	    314367 ns/op
+BenchmarkSigning-4                	   10000	    129331 ns/op
+BenchmarkValidation-4             	    2000	    794967 ns/op
+BenchmarkDeriveSeckeyShare500-4   	  100000	     17181 ns/op
+BenchmarkRecoverSeckey100-4       	    3000	    520711 ns/op
+BenchmarkRecoverSeckey200-4       	    1000	   1612358 ns/op
+BenchmarkRecoverSeckey500-4       	     200	   7986834 ns/op
+BenchmarkRecoverSeckey1000-4      	      50	  31277685 ns/op
+BenchmarkRecoverSignature100-4    	     100	  11057710 ns/op
+BenchmarkRecoverSignature200-4    	      50	  22555677 ns/op
+BenchmarkRecoverSignature500-4    	      20	  60766219 ns/op
+BenchmarkRecoverSignature1000-4   	      10	 145734977 ns/op
+```
+
+The benchmark tests the speed of the underlying elliptic curve and pairing implementation by Shigeo Mitsunari (https://github.com/herumi/mcl).
+
+Notably, we see the __signature validation time is 0.8 ms__ which involves a pairing evaluation.
+
+We also see that __combining 500 signature shares into a group signature takes 60 ms__ (which would be used at a group size of 1000).
+
 ## Dependencies
 
 The dependencies below are all met in the docker image above.
