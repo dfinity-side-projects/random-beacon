@@ -3,7 +3,6 @@ package bls
 import (
 	"strconv"
 	"math/big"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -64,8 +63,10 @@ func (r Rand) Deri(i int) Rand {
 // Convert to a random integer from the interval [0,n-1]. 
 func (r Rand) Modulo(n int) int {
 	// modulo len(groups) with big.Ints (Mod method works on pointers)
-	var b big.Int
-	b.Mod(common.Bytes2Big(r.Bytes()), big.NewInt(int64(n)))
+	//var b big.Int
+	b := big.NewInt(0)
+	b.SetBytes(r.Bytes())
+	b.Mod(b, big.NewInt(int64(n)))
         return int(b.Int64())
 }
 
