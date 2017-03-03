@@ -16,9 +16,9 @@ docker run \
 	--tty \
 	--volume $(pwd):/go/src/dfinity/beacon \
 	--workdir /go/src/dfinity/beacon \
-	dfinity/build-env
+	dfinity/build-env:latest
 ```
-Or short: `docker run --rm -it -v $(pwd):/go/src/dfinity/beacon -w /go/src/dfinity/beacon dfinity/build-env`
+Or short: `docker run --rm -it -v $(pwd):/go/src/dfinity/beacon -w /go/src/dfinity/beacon dfinity/build-env:latest`
 
 ## Run Simulation
 ### With default parameters
