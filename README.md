@@ -116,7 +116,7 @@ List of parameters:
 
 ## Run test
 
-`go run test/test.go`
+`go test ./...`
  
 ## Run Benchmark
 
