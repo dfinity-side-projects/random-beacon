@@ -3,16 +3,17 @@ package blscgo
 import "testing"
 import "strconv"
 
+var curve = CurveFp382_1
+var unitN = 0
+
 func TestPre(t *testing.T) {
 	t.Log("init")
-	Init()
+	Init(curve)
+	unitN = GetOpUnitSize()
 	var err error
 	{
 		var id ID
-		err = id.Set([]uint64{4, 3, 2, 1})
-		if err != nil {
-			t.Fatal(err)
-		}
+		id.Set([]uint64{6, 5, 4, 3, 2, 1}[0:unitN])
 
 		t.Log("id :", id)
 		var id2 ID
@@ -24,10 +25,7 @@ func TestPre(t *testing.T) {
 	}
 	{
 		var sec SecretKey
-		err = sec.SetArray([]uint64{1, 2, 3, 4})
-		if err != nil {
-			t.Fatal(err)
-		}
+		sec.SetArray([]uint64{1, 2, 3, 4, 5, 6}[0:unitN])
 		t.Log("sec=", sec)
 	}
 
@@ -57,7 +55,7 @@ func TestPre(t *testing.T) {
 
 func TestRecoverSecretKey(t *testing.T) {
 	t.Log("testRecoverSecretKey")
-	Init()
+	Init(curve)
 	k := 3000
 	var sec SecretKey
 	sec.Init()
@@ -68,18 +66,14 @@ func TestRecoverSecretKey(t *testing.T) {
 	n := k
 	secVec := make([]SecretKey, n)
 	idVec := make([]ID, n)
-	var err error
 	for i := 0; i < n; i++ {
-		err = idVec[i].Set([]uint64{1, 2, 3, uint64(i)})
-		if err != nil {
-			t.Fatal(err)
-		}
+		idVec[i].Set([]uint64{1, 2, 3, uint64(i), 5, 6}[0:unitN])
 		secVec[i].Set(msk, &idVec[i])
 	}
 	// recover sec2 from secVec and idVec
 	var sec2 SecretKey
 	sec2.Recover(secVec, idVec)
-	if sec != sec2 {
+	if sec.String() != sec2.String() {
 		t.Errorf("Mismatch in recovered secret key:\n  %s\n  %s.", sec.String(), sec2.String())
 	}
 }
@@ -87,7 +81,7 @@ func TestRecoverSecretKey(t *testing.T) {
 func TestSign(t *testing.T) {
 	m := "testSign"
 	t.Log(m)
-	Init()
+	Init(curve)
 
 	var sec0 SecretKey
 	sec0.Init()
@@ -109,12 +103,8 @@ func TestSign(t *testing.T) {
 	signVec := make([]Sign, n)
 	idVec := make([]ID, n)
 
-	var err error
 	for i := 0; i < n; i++ {
-		err = idVec[i].Set([]uint64{idTbl[i], 0, 0, 0})
-		if err != nil {
-			t.Fatal(err)
-		}
+		idVec[i].Set([]uint64{idTbl[i], 0, 0, 0, 0, 0}[0:unitN])
 		t.Logf("idVec[%d]=%s\n", i, idVec[i].String())
 
 		secVec[i].Set(msk, &idVec[i])
@@ -150,7 +140,7 @@ func TestSign(t *testing.T) {
 
 func TestAdd(t *testing.T) {
 	t.Log("testAdd")
-	Init()
+	Init(curve)
 	var sec1 SecretKey
 	var sec2 SecretKey
 	sec1.Init()
@@ -174,7 +164,7 @@ func TestAdd(t *testing.T) {
 
 func TestPop(t *testing.T) {
 	t.Log("testPop")
-	Init()
+	Init(curve)
 	var sec SecretKey
 	sec.Init()
 	pop := sec.GetPop()
@@ -189,7 +179,7 @@ func TestPop(t *testing.T) {
 
 func BenchmarkPubkeyFromSeckey(b *testing.B) {
 	b.StopTimer()
-	Init()
+	Init(curve)
 	var sec SecretKey
 	for n := 0; n < b.N; n++ {
 		sec.Init()
@@ -201,7 +191,7 @@ func BenchmarkPubkeyFromSeckey(b *testing.B) {
 
 func BenchmarkSigning(b *testing.B) {
 	b.StopTimer()
-	Init()
+	Init(curve)
 	var sec SecretKey
 	for n := 0; n < b.N; n++ {
 		sec.Init()
@@ -213,7 +203,7 @@ func BenchmarkSigning(b *testing.B) {
 
 func BenchmarkValidation(b *testing.B) {
 	b.StopTimer()
-	Init()
+	Init(curve)
 	var sec SecretKey
 	for n := 0; n < b.N; n++ {
 		sec.Init()
@@ -228,16 +218,13 @@ func BenchmarkValidation(b *testing.B) {
 
 func benchmarkDeriveSeckeyShare(k int, b *testing.B) {
 	b.StopTimer()
-	Init()
+	Init(curve)
 	var sec SecretKey
 	sec.Init()
 	msk := sec.GetMasterSecretKey(k)
 	var id ID
 	for n := 0; n < b.N; n++ {
-		err := id.Set([]uint64{1, 2, 3, uint64(n)})
-		if err != nil {
-			b.Fatal(err)
-		}
+		id.Set([]uint64{1, 2, 3, uint64(n)})
 		b.StartTimer()
 		sec.Set(msk, &id)
 		b.StopTimer()
@@ -252,7 +239,7 @@ func BenchmarkDeriveSeckeyShare500(b *testing.B) { benchmarkDeriveSeckeyShare(50
 
 func benchmarkRecoverSeckey(k int, b *testing.B) {
 	b.StopTimer()
-	Init()
+	Init(curve)
 	var sec SecretKey
 	sec.Init()
 	msk := sec.GetMasterSecretKey(k)
@@ -262,10 +249,7 @@ func benchmarkRecoverSeckey(k int, b *testing.B) {
 	secVec := make([]SecretKey, n)
 	idVec := make([]ID, n)
 	for i := 0; i < n; i++ {
-		err := idVec[i].Set([]uint64{1, 2, 3, uint64(i)})
-		if err != nil {
-			b.Fatal(err)
-		}
+		idVec[i].Set([]uint64{1, 2, 3, uint64(i)})
 		secVec[i].Set(msk, &idVec[i])
 	}
 
@@ -284,7 +268,7 @@ func BenchmarkRecoverSeckey1000(b *testing.B) { benchmarkRecoverSeckey(1000, b) 
 
 func benchmarkRecoverSignature(k int, b *testing.B) {
 	b.StopTimer()
-	Init()
+	Init(curve)
 	var sec SecretKey
 	sec.Init()
 	msk := sec.GetMasterSecretKey(k)
@@ -295,10 +279,7 @@ func benchmarkRecoverSignature(k int, b *testing.B) {
 	secVec := make([]SecretKey, n)
 	signVec := make([]Sign, n)
 	for i := 0; i < n; i++ {
-		err := idVec[i].Set([]uint64{1, 2, 3, uint64(i)})
-		if err != nil {
-			b.Fatal(err)
-		}
+		idVec[i].Set([]uint64{1, 2, 3, uint64(i)})
 		secVec[i].Set(msk, &idVec[i])
 		signVec[i] = *secVec[i].Sign("test message")
 	}

@@ -1,24 +1,38 @@
 package blscgo
 
-/* Original from Shigeo Mitsunari, https://github.com/herumi/bls/blob/master/go/bls/bls.go */
-
 /*
-#cgo CFLAGS:
-#cgo LDFLAGS:-lbls -lbls_if -lmcl -lgmp -lgmpxx -lstdc++ -lcrypto
+#cgo CFLAGS:-I../../include -DBLS_MAX_OP_UNIT_SIZE=6
+#cgo bn256 CFLAGS:-UBLS_MAX_OP_UNIT_SIZE -DBLS_MAX_OP_UNIT_SIZE=4
+#cgo bn384 CFLAGS:-UBLS_MAX_OP_UNIT_SIZE -DBLS_MAX_OP_UNIT_SIZE=6
+#cgo LDFLAGS:-lbls -lbls_if -lmcl -lgmp -lgmpxx -L../lib -L../../lib -L../../../mcl/lib -L../../mcl/lib  -lstdc++ -lcrypto
 #include "bls_if.h"
 */
 import "C"
 import "fmt"
 import "unsafe"
 
+const CurveFp254BNb = 0
+const CurveFp382_1 = 1
+const CurveFp382_2 = 2
+
 // Init --
-func Init() {
-	C.blsInit()
+func Init(curve int) {
+	C.blsInit(C.int(curve), C.BLS_MAX_OP_UNIT_SIZE)
+}
+
+// getMaxOpUnitSize --
+func GetMaxOpUnitSize() int {
+	return int(C.BLS_MAX_OP_UNIT_SIZE)
+}
+
+// getOpUnitSize --
+func GetOpUnitSize() int {
+	return int(C.blsGetOpUnitSize())
 }
 
 // ID --
 type ID struct {
-	v [4]C.uint64_t
+	v [C.BLS_MAX_OP_UNIT_SIZE]C.uint64_t
 }
 
 // getPointer --
@@ -50,18 +64,18 @@ func (id *ID) SetStr(s string) error {
 }
 
 // Set --
-func (id *ID) Set(v []uint64) error {
-	if len(v) != 4 {
-		return fmt.Errorf("bad size (%d), expected size 4", len(v))
+func (id *ID) Set(v []uint64) {
+	expect := GetOpUnitSize()
+	if len(v) != expect {
+		panic(fmt.Errorf("bad size (%d), expected size %d", len(v), expect))
 	}
 	// #nosec
 	C.blsIdSet(id.getPointer(), (*C.uint64_t)(unsafe.Pointer(&v[0])))
-	return nil
 }
 
 // SecretKey --
 type SecretKey struct {
-	v [4]C.uint64_t
+	v [C.BLS_MAX_OP_UNIT_SIZE]C.uint64_t
 }
 
 // getPointer --
@@ -93,13 +107,13 @@ func (sec *SecretKey) SetStr(s string) error {
 }
 
 // SetArray --
-func (sec *SecretKey) SetArray(v []uint64) error {
-	if len(v) != 4 {
-		return fmt.Errorf("bad size (%d), expected size 4", len(v))
+func (sec *SecretKey) SetArray(v []uint64) {
+	expect := GetOpUnitSize()
+	if len(v) != expect {
+		panic(fmt.Errorf("bad size (%d), expected size %d", len(v), expect))
 	}
 	// #nosec
 	C.blsSecretKeySetArray(sec.getPointer(), (*C.uint64_t)(unsafe.Pointer(&v[0])))
-	return nil
 }
 
 // Init --
@@ -151,7 +165,7 @@ func (sec *SecretKey) GetPop() (sign *Sign) {
 
 // PublicKey --
 type PublicKey struct {
-	v [4 * 2 * 3]C.uint64_t
+	v [C.BLS_MAX_OP_UNIT_SIZE * 2 * 3]C.uint64_t
 }
 
 // getPointer --
@@ -199,7 +213,7 @@ func (pub *PublicKey) Recover(pubVec []PublicKey, idVec []ID) {
 
 // Sign  --
 type Sign struct {
-	v [4 * 3]C.uint64_t
+	v [C.BLS_MAX_OP_UNIT_SIZE * 3]C.uint64_t
 }
 
 // getPointer --
@@ -237,7 +251,7 @@ func (sec *SecretKey) GetPublicKey() (pub *PublicKey) {
 	return pub
 }
 
-// Sign --
+// Constant Time Sign --
 func (sec *SecretKey) Sign(m string) (sign *Sign) {
 	sign = new(Sign)
 	buf := []byte(m)

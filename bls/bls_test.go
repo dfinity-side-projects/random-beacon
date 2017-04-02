@@ -5,7 +5,7 @@ import "dfinity/beacon/blscgo"
 
 func TestComparison(t *testing.T) {
 	t.Log("testComparison")
-	blscgo.Init()
+	blscgo.Init(blscgo.CurveFp254BNb)
 	b := Decimal2Big("16798108731015832284940804142231733909759579603404752749028378864165570215948")
 	sec := SeckeyFromBigInt(&b)
 	t.Log("sec.Hex: ", sec.Hex())
