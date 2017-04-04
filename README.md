@@ -124,18 +124,18 @@ List of parameters:
 
 Sample output for BN254:
 ```
-BenchmarkPubkeyFromSeckey-4       	    5000	    314367 ns/op
-BenchmarkSigning-4                	   10000	    129331 ns/op
-BenchmarkValidation-4             	    2000	    794967 ns/op
-BenchmarkDeriveSeckeyShare500-4   	  100000	     17181 ns/op
-BenchmarkRecoverSeckey100-4       	    3000	    520711 ns/op
-BenchmarkRecoverSeckey200-4       	    1000	   1612358 ns/op
-BenchmarkRecoverSeckey500-4       	     200	   7986834 ns/op
-BenchmarkRecoverSeckey1000-4      	      50	  31277685 ns/op
-BenchmarkRecoverSignature100-4    	     100	  11057710 ns/op
-BenchmarkRecoverSignature200-4    	      50	  22555677 ns/op
-BenchmarkRecoverSignature500-4    	      20	  60766219 ns/op
-BenchmarkRecoverSignature1000-4   	      10	 145734977 ns/op
+BenchmarkPubkeyFromSeckey-4       	    5000	    313638 ns/op
+BenchmarkSigning-4                	   10000	    105368 ns/op
+BenchmarkValidation-4             	    2000	    583468 ns/op
+BenchmarkDeriveSeckeyShare500-4   	  100000	     17605 ns/op
+BenchmarkRecoverSeckey100-4       	    3000	    582981 ns/op
+BenchmarkRecoverSeckey200-4       	    1000	   1770932 ns/op
+BenchmarkRecoverSeckey500-4       	     200	   9178534 ns/op
+BenchmarkRecoverSeckey1000-4      	      50	  33492710 ns/op
+BenchmarkRecoverSignature100-4    	     200	   7813759 ns/op
+BenchmarkRecoverSignature200-4    	     100	  15824394 ns/op
+BenchmarkRecoverSignature500-4    	      30	  47239189 ns/op
+BenchmarkRecoverSignature1000-4   	      10	 104978743 ns/op
 ```
 
 The benchmark tests the speed of the underlying elliptic curve and pairing implementation by Shigeo Mitsunari (https://github.com/herumi/mcl).
