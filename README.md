@@ -122,7 +122,7 @@ List of parameters:
 
 `go test --bench=. ./...`
 
-Sample output:
+Sample output for BN254:
 ```
 BenchmarkPubkeyFromSeckey-4       	    5000	    314367 ns/op
 BenchmarkSigning-4                	   10000	    129331 ns/op
@@ -143,6 +143,23 @@ The benchmark tests the speed of the underlying elliptic curve and pairing imple
 Notably, we see the __signature validation time is 0.8 ms__ which involves a pairing evaluation.
 
 We also see that __combining 500 signature shares into a group signature takes 60 ms__ (which would be used at a group size of 1000).
+
+
+Sample output for BN382_1:
+```
+BenchmarkPubkeyFromSeckey-4       	    2000	    922435 ns/op
+BenchmarkSigning-4                	    5000	    273455 ns/op
+BenchmarkValidation-4             	    1000	   1717128 ns/op
+BenchmarkDeriveSeckeyShare500-4   	   50000	     30183 ns/op
+BenchmarkRecoverSeckey100-4       	    2000	    979008 ns/op
+BenchmarkRecoverSeckey200-4       	     500	   3070395 ns/op
+BenchmarkRecoverSeckey500-4       	     100	  15512509 ns/op
+BenchmarkRecoverSeckey1000-4      	      20	  59512824 ns/op
+BenchmarkRecoverSignature100-4    	     100	  21427153 ns/op
+BenchmarkRecoverSignature200-4    	      30	  44704722 ns/op
+BenchmarkRecoverSignature500-4    	      10	 118874472 ns/op
+BenchmarkRecoverSignature1000-4   	       5	 268353411 ns/op
+```
 
 ## Dependencies
 
