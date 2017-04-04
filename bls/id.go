@@ -15,7 +15,7 @@ type ID struct {
 // Setters
 
 // SetBig --
-func (id ID) SetBig(b *big.Int) {
+func (id *ID) SetBig(b *big.Int) {
 	id.value = *b
 }
 
