@@ -176,3 +176,7 @@ For cgo, which is transitioning in, we need the environment variables set:
 `export LIBRARY_PATH=/build/herumi/bls/lib:/build/herumi/mcl/lib:$LIBRARY_PATH`
 
 `export CPATH=/build/herumi/bls/include:$CPATH`
+
+## Run linters
+
+`gometalinter --deadline=12s --disable=gotype ./...`
