@@ -67,7 +67,7 @@ func TestRecoverSecretKey(t *testing.T) {
 	secVec := make([]SecretKey, n)
 	idVec := make([]ID, n)
 	for i := 0; i < n; i++ {
-		idVec[i].Set([]uint64{1, 2, 3, uint64(i), 5, 6}[0:unitN])
+		idVec[i].Set([]uint64{1, 2, 3, 4, 5, uint64(i), 5, 6}[0:unitN])
 		secVec[i].Set(msk, &idVec[i])
 	}
 	// recover sec2 from secVec and idVec
@@ -224,7 +224,7 @@ func benchmarkDeriveSeckeyShare(k int, b *testing.B) {
 	msk := sec.GetMasterSecretKey(k)
 	var id ID
 	for n := 0; n < b.N; n++ {
-		id.Set([]uint64{1, 2, 3, uint64(n)})
+		id.Set([]uint64{1, 2, 3, 4, 5, uint64(n)})
 		b.StartTimer()
 		sec.Set(msk, &id)
 		b.StopTimer()
@@ -249,7 +249,7 @@ func benchmarkRecoverSeckey(k int, b *testing.B) {
 	secVec := make([]SecretKey, n)
 	idVec := make([]ID, n)
 	for i := 0; i < n; i++ {
-		idVec[i].Set([]uint64{1, 2, 3, uint64(i)})
+		idVec[i].Set([]uint64{1, 2, 3, 4, 5, uint64(i)})
 		secVec[i].Set(msk, &idVec[i])
 	}
 
@@ -279,7 +279,7 @@ func benchmarkRecoverSignature(k int, b *testing.B) {
 	secVec := make([]SecretKey, n)
 	signVec := make([]Sign, n)
 	for i := 0; i < n; i++ {
-		idVec[i].Set([]uint64{1, 2, 3, uint64(i)})
+		idVec[i].Set([]uint64{1, 2, 3, 4, 5, uint64(i)})
 		secVec[i].Set(msk, &idVec[i])
 		signVec[i] = *secVec[i].Sign("test message")
 	}
