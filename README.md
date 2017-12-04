@@ -1,8 +1,8 @@
 # Random Beacon
 [![Build Status](https://dfinity.build/job/beacon/badge/icon)](https://dfinity.build/job/beacon)
 
-The Random Beacon is produced by a relay mechanism between groups where each group has set up a BLS threshold-signature key pair. The next randomness is derived from the unique deterministic threshold group signature on the previous randomness as the message. The mechanism is called a "Threshold-Relay Chain" and was developed for the DFINITY network. It is described in greater detail, e.g., here: http://dfinity.network/pdfs/viewer.html?file=../library/threshold-relay-blockchain-stanford.pdf
-Some more background can be found in the "Technical" tab of this FAQ: http://dfinity.network/faq/
+The Random Beacon is produced by a relay mechanism between groups where each group has set up a BLS threshold-signature key pair. The next randomness is derived from the unique deterministic threshold group signature on the previous randomness as the message. The mechanism is called a "Threshold-Relay Chain" and was developed for the DFINITY network. It is described in greater detail, e.g., here: https://dfinity.org/pdf-viewer/pdfs/viewer?file=../library/threshold-relay-blockchain-stanford.pdf
+Some more background can be found in the "Technical" tab of this FAQ: https://dfinity.org/faq
 
 ## Simulation Environment
 You should first clone the `beacon` repository, and then run the `dfinity/build-env` docker container from inside the repository.
